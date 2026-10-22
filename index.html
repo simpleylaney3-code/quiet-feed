@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Quiet feed">
+<meta name="theme-color" content="#d9cdb9">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>Quiet feed</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,400&family=Space+Mono&family=Silkscreen&display=swap">
+<style>
+:root{--paper:#d9cdb9;--paper2:#e7dece;--ink:#2b2622;--card:#2b2622;--cardtx:#e7dece;--olive:#8a6f4e;--teal:#4f7a74;--amber:#c98a3d;--dd:#2b2622;--dl:#e7dece;color-scheme:light;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#211e1a;--paper2:#2c2823;--ink:#dcd0bb;--card:#14120f;--cardtx:#dcd0bb;--olive:#c4a57b;--dd:#14120f;--dl:#c9bca5;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#211e1a;--paper2:#2c2823;--ink:#dcd0bb;--card:#14120f;--cardtx:#dcd0bb;--olive:#c4a57b;--dd:#14120f;--dl:#c9bca5;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.4 "Josefin Sans",system-ui,sans-serif}
+button{font:inherit;color:inherit;background:none;border:1px solid var(--ink);padding:0;cursor:pointer}
+button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.app{margin:10px 10px 84px;border:1px solid var(--ink)}
+.top{display:grid;grid-template-columns:1fr auto;border-bottom:1px solid var(--ink)}
+.top h1{margin:0;padding:18px 14px;font-weight:300;font-size:22px;letter-spacing:.04em}
+.clock{border-left:1px solid var(--ink);padding:10px 14px;font:400 34px/1 Silkscreen,monospace;color:var(--olive);display:flex;align-items:center}
+.chips{display:flex;border-bottom:1px solid var(--ink);overflow-x:auto}
+.chips button{flex:0 0 auto;min-height:44px;padding:0 16px;border:0;border-right:1px solid var(--ink)}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.list{padding:14px;display:grid;gap:18px}
+.card{background:var(--card);color:var(--cardtx);padding:12px;box-shadow:4px 4px 0 rgba(0,0,0,.22)}.card .open{display:block;width:100%;text-align:left;border:0;padding:0}.sv{min-height:44px;padding:0 16px;margin-top:12px}.card .sv{border-color:var(--cardtx)}
+.card b{display:block;font-weight:600;font-size:17px;margin-bottom:2px}
+.card i{display:block;font-size:13px;margin-bottom:10px}
+.px{display:block;width:100%;height:auto;image-rendering:pixelated;border:1px solid var(--cardtx)}
+.note{margin:0;padding:12px 14px;border-top:1px solid var(--ink);font-size:13px}
+.now{padding:14px;border-bottom:1px solid var(--ink)}
+.now .px{border-color:var(--ink);max-width:340px;margin:0 auto}
+.now h2{margin:12px 0 0;font-weight:600;font-size:20px}
+.now p{margin:0 0 10px;font-size:14px}
+.bar{height:8px;border:1px solid var(--ink)}
+.bar div{height:100%;width:0;background:var(--olive)}
+.time{display:flex;justify-content:space-between;font:12px "Space Mono",monospace;margin:4px 0 12px}
+.ctl{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:8px}
+.ctl button{min-height:46px}
+.vis{display:flex;align-items:flex-end;gap:3px;height:56px;padding:0 14px;margin:14px 0;border-bottom:1px solid var(--ink)}
+.vis span{flex:1;background:var(--ink);height:4px}
+.trk{font:13px/1 "Space Mono",monospace}
+.trk button{display:grid;grid-template-columns:2ch 1fr auto;gap:10px;width:100%;text-align:left;border:0;padding:12px 14px;min-height:44px}
+.trk button[aria-current="true"]{background:var(--teal);color:#f3ead0}
+.trk small{font:inherit;opacity:.75}
+.sh{position:fixed;inset:0;z-index:20;background:var(--paper);overflow:auto;padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 16px)}
+.sh[hidden]{display:none}
+.sh h2{font-weight:600;margin:14px 0 4px}
+.sh .px{border-color:var(--ink)}
+.sh button{min-height:46px;padding:0 20px;margin-top:14px}
+.tabs{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--paper);border-top:1px solid var(--ink);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabs button{min-height:56px;border:0;font-size:17px}
+.tabs button+button{border-left:1px solid var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+#pv{position:relative}#pv .px{width:100%}#fs{position:absolute;right:8px;bottom:8px;width:44px;min-height:44px;margin:0;padding:0;background:var(--card);color:var(--cardtx);border-color:var(--cardtx)}#pv.full{position:fixed;inset:0;z-index:40;background:#000;display:flex;align-items:center;justify-content:center}#pv.full .px{width:100%;height:100%;object-fit:contain;border:0}#pv.full #fs{right:calc(env(safe-area-inset-right,0px) + 8px);bottom:calc(env(safe-area-inset-bottom,0px) + 8px)}#pick{z-index:30}.fold{display:grid;grid-template-columns:1fr auto;width:100%;text-align:left;border:0;border-bottom:1px solid var(--ink);padding:14px;min-height:48px}.sh .fold{margin:0 0 8px;border:1px solid var(--ink)}.row{display:grid;grid-template-columns:1fr auto;align-items:center;border-bottom:1px solid var(--ink)}.row .go{border:0;text-align:left;padding:10px 14px;min-height:48px}.row .rm{border:0;border-left:1px solid var(--ink);min-height:48px;padding:0 14px}.add{display:flex;gap:8px;padding:14px}.add input{flex:1;min-width:0;min-height:44px;padding:0 10px;border:1px solid var(--ink);background:var(--paper2);color:var(--ink);font:inherit}.add button{padding:0 16px;min-height:44px}.hd{padding:14px;display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--ink)}.hd h2{margin:0;font-weight:600;font-size:20px}.hd button{min-height:44px;padding:0 14px}.empty{padding:18px 14px;font-size:14px;margin:0}
+[hidden]{display:none!important}
+
+img.px{image-rendering:auto;aspect-ratio:16/9;object-fit:cover;filter:sepia(.3) saturate(.8) contrast(1.05);background:var(--paper2)}
+.pf{aspect-ratio:16/9;width:100%;border:1px solid var(--ink);background:#000}.pf iframe{width:100%;height:100%;border:0;display:block}
+.now .pf{margin-bottom:12px}.ctl .sv{margin:0}
+.row.r3{grid-template-columns:1fr auto auto}
+.rm[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+#welcome{z-index:50}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top"><h1>Quiet feed</h1><div class="clock" id="clock">00:00</div></header>
+  <section id="feed">
+    <div class="add" style="border-bottom:1px solid var(--ink)"><input id="q" type="search" placeholder="Search YouTube" aria-label="Search YouTube"><button id="qb">Search</button></div>
+    <div class="chips" id="chips"></div>
+    <div id="addch" hidden>
+      <div class="add"><button id="gi">Sign in with Google</button><button id="gs" hidden>Import subscriptions</button></div>
+      <div class="add"><input id="cn" placeholder="Paste a channel link or @handle" aria-label="Channel link or handle" autocapitalize="none" autocorrect="off"><button id="ca">Add</button></div>
+      <div id="cl"></div><div id="sl"></div>
+    </div>
+    <div id="res" hidden></div>
+    <p class="note" id="msg" hidden></p>
+    <div class="list" id="list"></div>
+  </section>
+  <section id="saved" hidden>
+    <div class="chips"><button id="sv1" aria-pressed="true">Videos</button><button id="sv2" aria-pressed="false">Music</button></div>
+    <div id="sbody"></div>
+    <p class="note">Playlists are saved on this phone.</p>
+  </section>
+  <section id="music" hidden>
+    <div class="now">
+      <div id="mp" hidden><div class="pf"><div id="yt"></div></div></div>
+      <h2 id="nt">Pick a track</h2><p id="na"></p>
+      <div class="ctl"><button id="prev">Previous</button><button class="sv" id="msv" aria-label="Save to playlist"></button><button id="next">Next</button></div>
+    </div>
+    <div class="trk" id="trk"></div>
+  </section>
+</div>
+<div id="sheet" class="sh" hidden>
+  <div class="pf" id="pf"></div>
+  <h2 id="st"></h2><p id="sc"></p>
+  <button id="ssv" class="sv" aria-label="Save to playlist"></button> <button id="sf" hidden>Add channel to feed</button> <button id="close">Close</button>
+</div>
+<div id="pick" class="sh" hidden>
+  <h2>Save to</h2><div id="pl"></div>
+  <div class="add" style="padding:14px 0"><input id="pn" placeholder="New playlist name" maxlength="40" aria-label="New playlist name"><button id="pa">Create</button></div>
+  <button id="pd">Done</button>
+</div>
+<div id="welcome" class="sh" hidden>
+  <h2>Quiet feed</h2>
+  <p>Sign in with the Google account that has YouTube Premium to pick channels from your subscriptions. You can also skip this and add channels by hand.</p>
+  <button id="wi">Sign in with Google</button> <button id="ws">Skip for now</button>
+</div>
+<nav class="tabs" role="tablist">
+  <button role="tab" id="t1" aria-selected="true">Feed</button>
+  <button role="tab" id="t2" aria-selected="false">Music</button>
+  <button role="tab" id="t3" aria-selected="false">Saved</button>
+</nav>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
